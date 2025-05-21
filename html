@@ -1,0 +1,955 @@
+<html lang="en"> 
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>MP3 Search & Convert</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+body {
+  font-family: 'Segoe UI', sans-serif;
+  background-color: #f9f9f9;
+  color: #333;
+}
+
+header {
+  background-color: #000;
+  color: white;
+  padding: 1rem 2rem;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+header .logo {
+  font-size: 1.5rem;
+  font-weight: bold;
+}
+
+header nav a {
+  color: white;
+  margin-left: 20px;
+  text-decoration: none;
+  cursor: pointer;
+}
+
+header nav a:hover {
+  color: lightblue;
+}
+
+.hero {
+  background-color: #63e5ff; /* og color #e0f0ff */
+  text-align: center;
+  padding: 4rem 2rem;
+}
+
+.hero h1 {
+  font-size: 2.5rem;
+  margin-bottom: 1rem;
+}
+
+.hero p {
+  font-size: 1.2rem;
+  margin-bottom: 2rem;
+}
+
+.search-container {
+  display: flex;
+  justify-content: center;
+  gap: 10px;
+  max-width: 600px;
+  margin: 0 auto;
+  flex-wrap: wrap;
+}
+
+.search-container input {
+  padding: 10px;
+  width: 70%;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  font-size: 1rem;
+}
+
+.search-container button {
+  padding: 10px 20px;
+  background-color: #000;
+  color: white;
+  border: none;
+  border-radius: 4px;
+  font-size: 1rem;
+  cursor: pointer;
+}
+
+.search-container button:hover {
+  background-color: #333;
+}
+
+section {
+  padding: 2rem;
+}
+
+.section-title {
+  font-size: 1.8rem;
+  margin-bottom: 1rem;
+}
+
+.categories, .moods {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+
+.category-item, .mood-item {
+  background-color: #000;
+  color: white;
+  padding: 10px 15px;
+  border-radius: 20px;
+  cursor: pointer;
+  transition: background 0.3s;
+}
+
+.category-item, .mood-item {
+  width: 160px;
+  height: 160px;
+  background-size: cover;
+  background-position: center;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  text-align: center;
+  font-size: 1.2rem;
+  font-weight: bold;
+  position: relative;
+}
+
+.category-item:hover, .mood-item:hover {
+  background-color: rgba(0, 0, 0, 0.7);
+}
+
+.recent-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+  gap: 20px;
+}
+
+
+.track-card {
+  display: flex;
+  align-items: center;
+  background-color: white;
+  border: 1px solid #ccc;
+  border-radius: 10px;
+  overflow: hidden;
+  padding: 10px;
+  text-align: left;
+}
+
+.track-info {
+  flex: 1;
+}
+
+
+.track-actions button {
+  margin: 5px;
+  padding: 6px 12px;
+  font-size: 0.85rem;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+footer {
+  background-color: #000;
+  color: white;
+  text-align: center;
+  padding: 2rem 1rem;
+}
+
+.social-icons a {
+  color: white;
+  margin: 0 10px;
+  font-size: 1.5rem;
+  text-decoration: none;
+}
+
+.social-icons a:hover {
+  color: lightblue;
+}
+
+.app-btn-container {
+  margin-top: 20px;
+}
+
+.app-btn {
+  background-color: #000;
+  color: white;
+  padding: 10px 20px;
+  border: none;
+  border-radius: 4px;
+  font-size: 1.2rem;
+  cursor: pointer;
+}
+
+.app-btn:hover {
+  background-color: #333;
+}
+
+.app-btn img {
+  width: 30px;
+  margin-right: 10px;
+}
+
+/* Transition Swap Effect */
+.page-section {
+  display: none;
+  opacity: 0;
+  transition: opacity 0.5s ease;
+}
+
+.page-section.active {
+  display: block;
+  opacity: 1;
+}
+
+.suggestions-container {
+  position: absolute;
+  top: 50px;
+  left: 20px;
+  right: 20px;
+  background-color: white;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  box-shadow: 0px 5px 10px rgba(0, 0, 0, 0.1);
+  max-height: 200px;
+  overflow-y: auto;
+  z-index: 10;
+  display: none;
+  padding: 10px;
+}
+
+.search-history {
+  margin-top: 10px;
+}
+
+.history-item {
+  padding: 8px 0;
+  cursor: pointer;
+}
+
+.history-item:hover {
+  background-color: #ddd;
+}
+
+.suggestion-item {
+  padding: 10px;
+  cursor: pointer;
+  transition: background 0.3s;
+}
+
+.suggestion-item:hover {
+  background-color: #f0f0f0;
+}
+
+.popup-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0,0,0,0.8);
+  display: none;
+  justify-content: center;
+  align-items: center;
+  z-index: 9999;
+}
+
+.popup-content {
+  background: #fff;
+  padding: 30px;
+  border-radius: 10px;
+  max-width: 500px;
+  width: 90%;
+  text-align: center;
+  position: relative;
+}
+
+.popup-cover {
+  width: 100%;
+  max-height: 250px;
+  object-fit: cover;
+  border-radius: 10px;
+  margin-bottom: 20px;
+}
+
+.popup-buttons button {
+  margin: 10px;
+  padding: 10px 20px;
+  font-size: 1rem;
+  border-radius: 5px;
+  cursor: pointer;
+}
+
+.popup-socials {
+  margin-top: 20px;
+}
+
+.popup-socials a {
+  font-size: 1.8rem;
+  margin: 0 10px;
+  color: #000;
+  transition: color 0.3s;
+}
+
+.popup-socials a:hover {
+  color: #007bff;
+}
+
+.close-btn {
+  position: absolute;
+  top: -7px;
+  right: 5px;
+  font-size: 2rem;
+  cursor: pointer;
+}
+
+#defaultSongCover {
+  width: 60px;
+  height: 60px;
+  object-fit: cover;
+  border-radius: 8px;
+  margin-right: 10px;
+}
+
+.popup-buttons-row {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 15px;
+  margin-top: 20px;
+  
+}
+
+#iframe-container {
+  width: 120px;
+  height: 40px;
+  position: relative;
+  overflow: hidden;
+  display: none;
+  border-radius: 5px;
+  padding: 10px 20px;
+}
+
+#iframe-container iframe {
+  width: 100%;
+  height: 100%;
+  border: none;
+  position: absolute;
+  top: 0;
+  left: 0;
+  z-index: 1;
+}
+
+.play-btn {
+  background-color: #63e5ff;
+  color: white;
+  padding: 10px 20px;
+  font-size: 1rem;
+  border-radius: 5px;
+  border: none;
+  width: 120px;
+  height: 40px;
+  font-weight: bold;
+  text-align: center;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  position: relative;
+}
+
+
+/* Dropdown menu for Genres */
+.dropdown {
+  position: relative;
+  display: inline-block;
+}
+
+.dropdown-content {
+  display: none;
+  position: absolute;
+  background-color: white;
+  min-width: 180px;
+  box-shadow: 0px 8px 16px rgba(0,0,0,0.2);
+  z-index: 1000;
+  border-radius: 5px;
+  overflow: hidden;
+  margin-top: 5px;
+}
+
+.dropdown-content a {
+  color: black;
+  padding: 10px 16px;
+  text-decoration: none;
+  display: block;
+  cursor: pointer;
+}
+
+.dropdown-content a:hover {
+  background-color: #f1f1f1;
+}
+
+
+
+  </style>
+</head>
+<body>
+
+  <header>
+    <div class="logo">hchhch</div>
+    <nav>
+      <a id="homeBtn">Home</a>
+      <div id="genresDropdown" class="dropdown">
+        <a id="genresBtn">Genres ▾</a>
+        <div id="genresList" class="dropdown-content"></div>
+      </div>
+      <a href="#">Upload</a>
+      <a href="#">Contact</a>
+    </nav>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css" integrity="sha512-Evv84Mr4kqVGRNSgIGL/F/aIDqQb7xQ2vcrdIwxfjThSH8CSR7PBEakCr51Ck+w+/U6swU2Im1vVX0SVk9ABhg==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+  </header>
+
+  <section class="hero">
+    <h1>hdgdfcdbdhfgf</h1>
+    <p>Fast. Free. Unlimited.</p>
+    <div class="search-container" style="position: relative;">
+      <input type="text" id="searchInput" placeholder="Enter video title or URL..." oninput="handleSearchInput()" />
+      <button onclick="handleSearch()">Search</button>
+      <div id="suggestions" class="suggestions-container"></div>
+    </div>
+  </section>
+
+  <!-- Home Page Content -->
+
+  <div id="homePage" class="page-section active">
+    
+    <section>
+      <div class="section-title">Recently Added</div>
+      <div class="recent-grid">
+      </div>
+    </section>
+
+
+    <section>
+      <div class="section-title">Genres</div>
+      <div class="categories">
+      </div>
+    </section>
+
+
+  <section>
+  <div class="section-title">Mood</div>
+  <div class="moods">
+    <div class="mood-item" style="background-image: url('https://i.postimg.cc/QCM1L9xx/party.webp');" onclick="loadMoodSongs('Party')">Party</div>
+    <div class="mood-item" style="background-image: url('https://img.freepik.com/premium-photo/handsome-man-chilling-listening-music-headphones-home-sofa_624325-3454.jpg');" onclick="loadMoodSongs('Chill')">Chill</div>
+    <div class="mood-item" style="background-image: url('https://i.postimg.cc/5NfJ5BKC/study.webp');" onclick="loadMoodSongs('Study')">Study</div>
+    <div class="mood-item" style="background-image: url('https://i.postimg.cc/t4K9LYNd/workout.webp');" onclick="loadMoodSongs('Workout')">Workout</div>
+    <div class="mood-item" style="background-image: url('https://i.postimg.cc/5y4PySbB/sleep.webp');" onclick="loadMoodSongs('Sleep')">Sleep</div>
+  </div>
+</section>
+
+
+
+
+</div>
+
+  <!-- Search Results -->
+
+  <div id="searchResults" class="page-section">
+    <section>
+      <div class="section-title">Search Results</div>
+      <p id="resultsPlaceholder">Type a search query and press "Search"...</p>
+    </section>
+  </div>
+  
+  <!-- Song Detail Popup -->
+<div id="songPopup" class="popup-overlay">
+  <div class="popup-content">
+    <span class="close-btn" onclick="closePopup()">&times;</span>
+    <img id="popupCover" src="" alt="Song Cover" class="popup-cover">
+    <h2 id="popupTitle"></h2>
+    <p id="popupArtist"></p>
+    <p id="popupGenre"></p>
+
+    
+    <div class="popup-buttons-row">
+  <button class="play-btn" onclick="playPreview()">Play</button>
+  <div id="iframe-container">
+    <iframe id="singleButtonApi" src="" width="100%" height="100%" allowtransparency="true" scrolling="no" style="border: none; position: absolute; top: 0; left: 0; z-index: 1;"></iframe>
+    <div id="overlay" style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; background-color: 000; z-index: 2; pointer-events: none; display: flex; align-items: center; justify-content: center;">
+      <div style="pointer-events: none; font-size: 100%; font-weight: bold; color: white;">Download</div>
+    </div>
+  </div>
+</div>
+
+<!-- Move this outside the button row -->
+<div class="popup-socials">
+  <a href="#" id="facebookLink" target="_blank"><i class="fab fa-facebook"></i></a>
+  <a href="#" id="xLink" target="_blank"><i class="fab fa-x-twitter"></i></a>
+  <a href="#" id="instagramLink" target="_blank"><i class="fab fa-instagram"></i></a>
+  <a href="#" id="tiktokLink" target="_blank"><i class="fab fa-tiktok"></i></a>
+  <a href="#" id="youtubeLink" target="_blank"><i class="fab fa-youtube"></i></a>
+  <a href="#" id="spotifyLink" target="_blank"><i class="fab fa-spotify"></i></a>
+  <a href="#" id="itunesLink" target="_blank"><i class="fab fa-itunes"></i></a>
+  <a href="#" id="shareLink" target="_blank"><i class="fas fa-share-alt"></i></a>
+
+</div>
+
+   </div>
+</div>
+
+<!-- Genres Page -->
+<div id="Genres" class="page-section">
+  <section>
+    <div class="section-title" id="selectedGenreTitle">Genre: </div>
+    <div id="genreSongsContainer" class="recent-grid">
+      <!-- Songs will be injected here -->
+    </div>
+  </section>
+</div>
+
+<!-- Mood Page -->
+<div id="MoodPage" class="page-section">
+  <section>
+    <div class="section-title" id="selectedMoodTitle">Mood: </div>
+    <div id="moodSongsContainer" class="recent-grid">
+      <!-- Songs will be injected here -->
+    </div>
+  </section>
+</div>
+
+
+  <footer>
+    <div>Follow us on:</div>
+    <div class="social-icons">
+      <a href="#"><i class="fab fa-facebook"></i></a>
+      <a href="#"><i class="fab fa-instagram"></i></a>
+      <a href="#"><i class="fab fa-x-twitter"></i></a>
+      <a href="#"><i class="fab fa-linkedin"></i></a>
+    </div>
+    <div class="app-btn-container">
+      <button class="app-btn">
+        <img src="https://via.placeholder.com/160x160" alt="App Icon"> Download our app now!
+      </button>
+    </div>
+    <p>&copy; 2025 MP3Convert. All rights reserved.</p>
+  </footer>
+
+  <script>
+  const searchInput = document.getElementById('searchInput');
+  const homePage = document.getElementById('homePage');
+  const searchResults = document.getElementById('searchResults');
+  const homeBtn = document.getElementById('homeBtn');
+  const resultsPlaceholder = document.getElementById('resultsPlaceholder');
+  const recentlyAddedContainer = document.querySelector('.recent-grid');
+  const genresContainer = document.querySelector('.categories');
+  const suggestionsContainer = document.getElementById('suggestions');
+  const searchHistory = JSON.parse(localStorage.getItem('searchHistory')) || [];
+
+  let songsData = [];
+
+  const synonyms = {
+    "pop": ["pop", "popular", "top 40"],
+    "rock": ["rock", "alternative", "indie"],
+    "hip-hop": ["hip-hop", "rap", "trap"],
+  };
+  
+  const moodGenreMap = {
+  Party: ["pop", "dance", "electronic", "reggae", "jazz", "nova beats", "echo drift"],
+  Chill: ["lofi", "ambient", "acoustic", "jazz"],
+  Study: ["classical", "lofi", "ambient"],
+  Workout: ["hip-hop", "electronic", "trap", "rock"],
+  Sleep: ["ambient", "classical", "lofi"]
+};
+
+
+  function switchView(targetId) {
+  const sections = document.querySelectorAll('.page-section');
+  sections.forEach(section => section.classList.remove('active'));
+
+  const target = document.getElementById(targetId);
+  if (target) {
+    target.classList.add('active');
+  }
+}
+
+
+  function handleSearch() {
+    const input = searchInput.value.trim().toLowerCase();
+    if (!input) {
+      alert("Please enter a search term or URL.");
+      return;
+    }
+
+    const matched = filterSongs(songsData, input, {
+      exclude: ['date&time', 'facebook', 'x', 'instagram', 'tiktok', 'youtube', 'spotify', 'itunes']
+    });
+
+    resultsPlaceholder.innerHTML = matched.length
+      ? matched.map(renderTrackCard).join('')
+      : `<p>No results found for "${input}".</p>`;
+
+    if (!searchHistory.includes(input)) {
+      searchHistory.push(input);
+      localStorage.setItem('searchHistory', JSON.stringify(searchHistory));
+    }
+
+    suggestionsContainer.style.display = 'none';
+    switchView('searchResults');
+;
+  }
+
+  function filterSongs(data, keyword, options = {}) {
+    const { exclude = [] } = options;
+    return data.filter(song => {
+      return Object.entries(song).some(([key, value]) => {
+        if (exclude.includes(key)) return false;
+        const matchedValue = (value || '').toLowerCase();
+        if (synonymMatch(keyword, matchedValue)) return true;
+        return matchedValue.includes(keyword);
+      });
+    });
+  }
+
+  function synonymMatch(keyword, value) {
+    for (let [key, synonymArr] of Object.entries(synonyms)) {
+      if (synonymArr.includes(keyword) && value.includes(key)) {
+        return true;
+      }
+    }
+    return false;
+  }
+
+
+  function handleSearchInput() {
+    const query = searchInput.value.trim().toLowerCase();
+    if (!query && searchHistory.length === 0) {
+      suggestionsContainer.style.display = 'none';
+      return;
+    }
+
+    const suggestions = getSuggestions(query);
+    renderSuggestionsAndHistory(suggestions);
+  }
+
+  function getSuggestions(query) {
+    const matchedSuggestions = [];
+
+    songsData.forEach(song => {
+      if (song.songTitle.toLowerCase().includes(query) || song.genre.toLowerCase().includes(query)) {
+        matchedSuggestions.push(song.songTitle);
+      }
+
+      Object.keys(synonyms).forEach(keyword => {
+        if (synonyms[keyword].includes(query)) {
+          matchedSuggestions.push(keyword);
+        }
+      });
+    });
+
+    return [...new Set(matchedSuggestions)];
+  }
+
+  function renderSuggestionsAndHistory(suggestions) {
+    suggestionsContainer.innerHTML = `
+      ${suggestions.length ? `<div><strong>Suggestions:</strong></div>` : ''}
+      ${suggestions.map(item => `
+        <div class="suggestion-item" onclick="handleSuggestionClick('${item}')">${item}</div>
+      `).join('')}
+      ${searchHistory.length ? `
+        <div class="search-history">
+          <div><strong>Recent Searches:</strong></div>
+          <div>
+            ${searchHistory.map(item => `
+              <div class="history-item" onclick="searchInput.value = '${item}'; handleSearch();">${item}</div>
+            `).join('')}
+          </div>
+          <button onclick="clearSearchHistory()">Clear History</button>
+        </div>
+      ` : ''}
+    `;
+
+    suggestionsContainer.style.display = 'block';
+  }
+
+  function handleSuggestionClick(suggestion) {
+    searchInput.value = suggestion;
+    handleSearch();
+  }
+
+  function clearSearchHistory() {
+    localStorage.removeItem('searchHistory');
+    searchHistory.length = 0;
+    handleSearchInput(); // Refresh UI
+  }
+
+  function loadSongs() {
+    const xhr = new XMLHttpRequest();
+    xhr.open("GET", "https://api.jsonbin.io/v3/b/682465058960c979a5993ccc/latest", true);
+    xhr.setRequestHeader("X-Master-Key", "$2a$10$q/Zpu/KXYgasJ9lq14u7weHkElSpbGQv6Zf1tmtW3J/lR2OrJYeUK");
+
+    xhr.onreadystatechange = function () {
+  if (xhr.readyState === 4 && xhr.status === 200) {
+    const response = JSON.parse(xhr.responseText);
+    songsData = response.record;
+    populateRecentlyAdded();
+    populateGenres();
+    
+  }
+};
+
+
+    xhr.send();
+  }
+  
+
+  function populateRecentlyAdded() {
+    const sorted = [...songsData].sort((a, b) => new Date(b["date&time"]) - new Date(a["date&time"]));
+    const filtered = filterSongs(sorted, "", {
+      exclude: ['date&time', 'facebook', 'x', 'instagram', 'tiktok', 'youtube', 'spotify', 'itunes']
+    });
+
+    recentlyAddedContainer.innerHTML = filtered.slice(0, 6).map(renderTrackCard).join('');
+  }
+
+  function populateGenres() {
+  const genres = [...new Set(songsData.map(song => song.genre).filter(Boolean))];
+
+  // Home page boxes
+  genresContainer.innerHTML = genres.map(genre => `
+    <div class="category-item" style="background-image: url('https://via.placeholder.com/160x160');" onclick="loadGenreSongs('${genre}')">
+      <span>${genre}</span>
+    </div>
+  `).join('');
+
+  // Dropdown menu
+  const genresList = document.getElementById('genresList');
+  genresList.innerHTML = genres.map(genre => `
+    <a onclick="loadGenreSongs('${genre}'); toggleDropdown(false);">${genre}</a>
+  `).join('');
+}
+
+const genresBtn = document.getElementById('genresBtn');
+const genresList = document.getElementById('genresList');
+
+genresBtn.addEventListener('click', (e) => {
+  e.stopPropagation(); // prevent it from closing immediately
+  toggleDropdown();
+});
+
+function toggleDropdown(force = null) {
+  const isVisible = genresList.style.display === 'block';
+  genresList.style.display = (force === null ? !isVisible : force) ? 'block' : 'none';
+}
+
+// Close dropdown if clicked outside
+document.addEventListener('click', (event) => {
+  if (!document.getElementById('genresDropdown').contains(event.target)) {
+    toggleDropdown(false);
+  }
+});
+
+
+function loadGenreSongs(genre) {
+  const filteredSongs = songsData.filter(song => song.genre === genre);
+  const container = document.getElementById('genreSongsContainer');
+  const title = document.getElementById('selectedGenreTitle');
+
+  container.innerHTML = filteredSongs.length
+    ? filteredSongs.map(renderTrackCard).join('')
+    : `<p>No songs found in "${genre}".</p>`;
+
+  title.textContent = `Genre: ${genre}`;
+  switchView('Genres');
+}
+
+
+document.getElementById('genresBtn').addEventListener('click', () => {
+  document.getElementById('genreSongsContainer').innerHTML = '<p>Please select a genre from Home.</p>';
+  document.getElementById('selectedGenreTitle').textContent = 'Genre:';
+  switchView('Genres');
+});
+
+
+  homeBtn.addEventListener('click', () => {
+  switchView('homePage'); // instead of switchView(false)
+  searchInput.value = '';
+  suggestionsContainer.style.display = 'none';
+});
+
+  searchInput.addEventListener('input', handleSearchInput);
+
+  window.onload = function () {
+  loadSongs();
+
+  const hash = window.location.hash.slice(1);
+  if (hash) {
+    // Check for matching song ID
+    setTimeout(() => {
+      const match = songsData.find(song => generateSongID(song) === hash);
+      if (match) showPopup(match);
+    }, 500); // Wait for songsData to load
+  }
+};
+
+  
+  // Close suggestions container when clicking outside
+document.addEventListener('click', function(event) {
+  const isClickInsideInput = searchInput.contains(event.target);
+  const isClickInsideSuggestions = suggestionsContainer.contains(event.target);
+
+  if (!isClickInsideInput && !isClickInsideSuggestions) {
+    suggestionsContainer.style.display = 'none';
+  }
+});
+
+
+let selectedSong = null;
+
+function showPopup(song) {
+  selectedSong = song;
+  const defaultCoverURL = 'https://upload.wikimedia.org/wikipedia/commons/3/3c/No-album-art.png'; // Your default cover
+// Generate Song ID and Share Link
+const songID = generateSongID(song);
+const shareURL = `${window.location.origin}/#${songID}`;
+
+// Set Share icon's link
+document.getElementById('shareLink').href = shareURL;
+
+  // Use the song's cover if it exists, otherwise use the default
+  document.getElementById('popupCover').src = song.cover || defaultCoverURL;
+  document.getElementById('popupTitle').textContent = song.songTitle;
+  document.getElementById('popupArtist').textContent = `${song.artistName}${song.featuredArtist ? " ft. " + song.featuredArtist : ""}`;
+  document.getElementById('popupGenre').textContent = `Genre: ${song.genre}`;
+
+  // Set social links
+  document.getElementById('facebookLink').href = song.facebook || '#';
+  document.getElementById('xLink').href = song.x || '#';
+  document.getElementById('instagramLink').href = song.instagram || '#';
+  document.getElementById('tiktokLink').href = song.tiktok || '#';
+  document.getElementById('youtubeLink').href = song.youtube || '#';
+  document.getElementById('spotifyLink').href = song.spotify || '#';
+  document.getElementById('itunesLink').href = song.itunes || '#';
+
+  // Set the iframe source dynamically
+  const iframe = document.getElementById('singleButtonApi');
+  iframe.src = `https://clickapi.net/api/single/mp3?url=https://www.youtube.com/watch?v=${song.downloadId}`;
+
+  // Show the iframe container (download button)
+  document.getElementById('iframe-container').style.display = 'block';
+
+  // Show the popup
+  document.getElementById('songPopup').style.display = 'flex';
+}
+
+function closePopup() {
+  document.getElementById('songPopup').style.display = 'none';
+}
+
+function playPreview() {
+  if (selectedSong && selectedSong.previewId) {
+    window.open(`https://www.youtube.com/watch?v=${selectedSong.previewId}`, '_blank');
+  } else {
+    alert("No preview available.");
+  }
+}
+
+function renderTrackCard(song) {
+    const defaultCoverURL = 'https://upload.wikimedia.org/wikipedia/commons/3/3c/No-album-art.png'; // Your default cover
+
+    // Create a song JSON string to pass it to the popup function
+    const songJSON = encodeURIComponent(JSON.stringify(song));
+
+    return `
+      <div class="track-card" onclick='showPopup(JSON.parse(decodeURIComponent("${songJSON}")))'>
+        <img id="defaultSongCover" src="${defaultCoverURL}" alt="${song.songTitle} cover">
+        <div class="track-info">
+          <h4>${song.songTitle}</h4>
+          <p>${song.artistName}${song.featuredArtist ? " ft. " + song.featuredArtist : ""}</p>
+        </div>
+      </div>
+    `;
+  }
+
+const dev3 = document.getElementById('dev3');
+const dev3Title = document.getElementById('dev3Title');
+const dev3Content = document.getElementById('dev3Content');
+
+function showGenreSongs(genre) {
+  // Set title
+  dev3Title.textContent = `Genre: ${genre}`;
+
+  // Filter songs by genre
+  const filtered = songsData.filter(song => song.genre && song.genre.toLowerCase() === genre.toLowerCase());
+
+  // Render them
+  dev3Content.innerHTML = filtered.length
+    ? filtered.map(renderTrackCard).join('')
+    : `<p>No songs found for "${genre}".</p>`;
+
+  // Show dev3, hide others
+  switchSection(dev3);
+}
+
+function switchSection(sectionToShow) {
+  // Hide all page-sections
+  document.querySelectorAll('.page-section').forEach(sec => sec.classList.remove('active'));
+  // Show selected
+  sectionToShow.classList.add('active');
+}
+
+function loadMoodSongs(mood) {
+  const genresForMood = moodGenreMap[mood];
+  const filteredSongs = songsData.filter(song =>
+    genresForMood.includes(song.genre?.toLowerCase())
+  );
+
+  const container = document.getElementById('moodSongsContainer');
+  const title = document.getElementById('selectedMoodTitle');
+
+  container.innerHTML = filteredSongs.length
+    ? filteredSongs.map(renderTrackCard).join('')
+    : `<p>No songs found for mood "${mood}".</p>`;
+
+  title.textContent = `Mood: ${mood}`;
+  switchView('MoodPage');
+}
+
+const filteredSongs = songsData.filter(song => 
+  song.genre && genresForMood.includes(song.genre.toLowerCase())
+);
+
+function generateSongID(song) {
+  const sanitize = str => (str || '')
+    .toLowerCase()
+    .replace(/[\s&]+/g, '-')
+    .replace(/[^a-z0-9\-]/g, '');
+
+  const artist = sanitize(song.artistName);
+  const title = sanitize(song.songTitle);
+  const featured = sanitize(song.featuredArtist);
+  const genre = sanitize(song.genre);
+
+  return `${artist}-${title}${featured ? '-' + featured : ''}-${genre}`;
+}
+
+</script>
+
+
+</body>
+</html>
