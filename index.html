@@ -888,21 +888,22 @@ function playPreview() {
 }
 
 function renderTrackCard(song) {
-    const defaultCoverURL = 'https://upload.wikimedia.org/wikipedia/commons/3/3c/No-album-art.png'; // Your default cover
+  const defaultCoverURL = 'https://upload.wikimedia.org/wikipedia/commons/3/3c/No-album-art.png'; // Your default cover
 
-    // Create a song JSON string to pass it to the popup function
-    const songJSON = encodeURIComponent(JSON.stringify(song));
+  // Create a song JSON string to pass it to the popup function
+  const songJSON = encodeURIComponent(JSON.stringify(song));
 
-    return `
-      <div class="track-card" onclick='showPopup(JSON.parse(decodeURIComponent("${songJSON}")))'>
-        <img id="defaultSongCover" src="${defaultCoverURL}" alt="${song.songTitle} cover">
-        <div class="track-info">
-          <h4>${song.songTitle}</h4>
-          <p>${song.artistName}${song.featuredArtist ? " ft. " + song.featuredArtist : ""}</p>
-        </div>
+  return `
+    <div class="track-card" onclick='showPopup(JSON.parse(decodeURIComponent("${songJSON}"))); window.location.hash = "#${generateSongID(song)}"'>
+      <img id="defaultSongCover" src="${defaultCoverURL}" alt="${song.songTitle} cover">
+      <div class="track-info">
+        <h4>${song.songTitle}</h4>
+        <p>${song.artistName}${song.featuredArtist ? " ft. " + song.featuredArtist : ""}</p>
       </div>
-    `;
-  }
+    </div>
+  `;
+}
+
 
 const dev3 = document.getElementById('dev3');
 const dev3Title = document.getElementById('dev3Title');
