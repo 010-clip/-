@@ -1,4 +1,6 @@
-<html lang="en"> 
+
+ 
+ <html lang="en"> 
 
 <head>
   <meta charset="UTF-8" />
@@ -171,6 +173,11 @@ footer {
   padding: 2rem 1rem;
 }
 
+.footer-links a {
+    color: white;
+    text-decoration: none;
+  }
+
 .social-icons a {
   color: white;
   margin: 0 10px;
@@ -216,6 +223,9 @@ footer {
   display: block;
   opacity: 1;
 }
+
+
+
 
 .suggestions-container {
   position: absolute;
@@ -404,6 +414,75 @@ footer {
   background-color: #f1f1f1;
 }
 
+#infoPages {
+  padding: 40px 20px;
+  max-width: 900px;
+  margin: auto;
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  color: #333;
+  background-color: #fafafa;
+  border-radius: 8px;
+  box-shadow: 0 0 10px rgba(0,0,0,0.05);
+}
+
+#infoPages h1,
+#infoPages h2 {
+  color: #222;
+  margin-top: 30px;
+  font-weight: 600;
+}
+
+#infoPages h1 {
+  font-size: 2.2rem;
+  margin-bottom: 20px;
+}
+
+#infoPages h2 {
+  font-size: 1.5rem;
+  margin-bottom: 10px;
+  border-left: 4px solid #63e5ff; /* og color = #ff5722 */
+  padding-left: 10px;
+}
+
+#infoPages p {
+  line-height: 1.7;
+  margin-bottom: 20px;
+  font-size: 1rem;
+}
+
+#infoPages ul {
+  padding-left: 20px;
+  margin-bottom: 30px;
+}
+
+#infoPages ul li {
+  margin-bottom: 10px;
+  line-height: 1.6;
+  list-style-type: disc;
+}
+
+@media screen and (max-width: 768px) {
+  #infoPages {
+    padding: 20px 15px;
+  }
+
+  #infoPages h1 {
+    font-size: 1.8rem;
+  }
+
+  #infoPages h2 {
+    font-size: 1.3rem;
+  }
+
+  #infoPages p,
+  #infoPages ul li {
+    font-size: 0.95rem;
+  }
+}
+.footer-links a {
+    color: white;
+    text-decoration: none;
+  }
 
 
   </style>
@@ -419,7 +498,8 @@ footer {
         <div id="genresList" class="dropdown-content"></div>
       </div>
       <a href="#">Upload</a>
-      <a href="#">Contact</a>
+      <a id="aboutBtn">About</a>
+
     </nav>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css" integrity="sha512-Evv84Mr4kqVGRNSgIGL/F/aIDqQb7xQ2vcrdIwxfjThSH8CSR7PBEakCr51Ck+w+/U6swU2Im1vVX0SVk9ABhg==" crossorigin="anonymous" referrerpolicy="no-referrer" />
   </header>
@@ -532,6 +612,81 @@ footer {
     </div>
   </section>
 </div>
+<!-- About Page -->
+
+  <div id="aboutPage" class="page-section">
+    <div id="infoPages">
+  <section>
+    <h1>About Us</h1>
+    <p>Welcome to AudioWaves, a unique platform built to empower both music lovers and artists. Our vision is simple: create a space where music is accessible to everyone, while actively supporting and promoting the creators behind the sound.</p>
+
+    <h2>Our Mission</h2>
+    <p>At AudioWaves, we believe that music should be free to discover, regardless of your ability to pay for subscriptions. We aim to bridge the gap between users who can’t afford streaming platforms and those who can — encouraging the latter to support artists directly through official channels. Our mission is to educate listeners on the value of streaming platforms, while also offering an accessible alternative for those left out by paywalls.</p>
+
+    <h2>What Makes AudioWaves Different</h2>
+    <p>Unlike traditional music platforms, AudioWaves doesn’t store or host music files. Instead, we function as a community-driven hub where both users and artists upload content in the form of third-party links from YouTube. This means all music here is traceable to its original source, giving credit where it’s due.</p>
+    <p>We don’t prioritize fame or status — we prioritize the music. Whether you're an independent artist just starting out or an international chart-topper, your work is welcome here. Our platform focuses on the quality and message of the music, not the size of your following.</p>
+
+    <h2>Features</h2>
+    <ul>
+      <li>Free Access to Music: Discover tracks from a wide range of genres without the need for a subscription.</li>
+      <li>Support for Artists: We promote music through strategic campaigns that benefit both creators and their streaming profiles.</li>
+      <li>Community-Driven Uploads: Anyone can contribute by sharing third-party links to music they love or create.</li>
+      <li>Non-Host Policy: We don’t store any media files. All content on AudioWaves is embedded or linked from other platforms.</li>
+      <li>Artist Equality: We don’t differentiate between “big” or “small” artists — only between good music and great music.</li>
+      <li>User-Friendly Interface: Our website is built for easy navigation, allowing you to find and play music quickly with just a few clicks.</li>
+      <li>Standard-Quality Audio: Enjoy accessible streaming through third-party links. For the best High Quality audio experience, we encourage users to check out platforms like Spotify, Apple Music and more...</li>
+      <li>Mobile Compatibility: AudioWaves works seamlessly on mobile devices, so you can discover and enjoy music wherever you are.</li>
+      <li>Download Options: We offer downloads for personal offline listening. Please respect usage terms and only download for personal, non-commercial use.</li>
+    </ul>
+
+    <h2>A Platform with Purpose</h2>
+    <p>AudioWaves isn’t just another music tool — it’s a movement. We’re here to show how streaming and free listening can coexist, each serving a purpose in the modern music landscape. Our goal is to raise awareness of how every stream, share, and follow can impact an artist’s career.</p>
+
+    <h2>How It Works</h2>
+    <p>It’s easy. Find a track you like, click on it, download, and listen. If you love it and can afford it, follow the artist on streaming platforms to support their journey. If you can’t, enjoy the music freely — we’ve built this space with you in mind too.</p>
+
+    <h2>Join the Movement</h2>
+    <p>Whether you're here to find new tunes, share your own, or support artists in a meaningful way, AudioWaves is your stage. Music is for everyone — and AudioWaves makes sure it stays that way.</p>
+  </section>
+  </div>
+</div>
+
+
+  <div id="dmcaPage" class="page-section">
+    <div id="infoPages">
+  <section>
+    
+  </section>
+  </div>
+</div>
+
+
+  <div id="disclaimerPage" class="page-section">
+    <div id="infoPages">
+  <section>
+    
+  </section>
+  </div>
+</div>
+
+
+  <div id="termsPage" class="page-section">
+    <div id="infoPages">
+  <section>
+    
+  </section>
+  </div>
+</div>
+  
+
+  <div id="privacyPage" class="page-section">
+    <div id="infoPages">
+  <section>
+    
+  </section>
+  </div>
+</div>
 
 
   <footer>
@@ -542,9 +697,15 @@ footer {
       <a href="#"><i class="fab fa-x-twitter"></i></a>
       <a href="#"><i class="fab fa-linkedin"></i></a>
     </div>
+    <div class="footer-links" style="margin-top: 15px;">
+    <a href="#">DMCA</a> |
+    <a href="#">Disclaimer</a> |
+    <a href="#">Terms of Use</a> |
+    <a href="#">Privacy Policy</a>
+  </div>
     <div class="app-btn-container">
       <button class="app-btn">
-        <img src="https://via.placeholder.com/160x160" alt="App Icon"> Download our app now!
+        <i class="fas fa-download"></i> Download our app now!
       </button>
     </div>
     <p>&copy; 2025 MP3Convert. All rights reserved.</p>
@@ -552,9 +713,14 @@ footer {
 
   <script>
   const searchInput = document.getElementById('searchInput');
-  const homePage = document.getElementById('homePage');
+  const homePage = document.getElementById('homeBtn');
   const searchResults = document.getElementById('searchResults');
   const homeBtn = document.getElementById('homeBtn');
+  const aboutBtn = document.getElementById('aboutBtn');
+  const dmcaBtn = document.getElementById('dmcaBtn');
+  const disclaimerBtn = document.getElementById('disclaimerBtn');
+  const termsBtn = document.getElementById('termsBtn');
+  const privacyBtn = document.getElementById('privacyBtn');
   const resultsPlaceholder = document.getElementById('resultsPlaceholder');
   const recentlyAddedContainer = document.querySelector('.recent-grid');
   const genresContainer = document.querySelector('.categories');
@@ -569,6 +735,42 @@ footer {
     "hip-hop": ["hip-hop", "rap", "trap"],
   };
   
+aboutBtn.addEventListener('click', () => {
+  switchView('aboutPage');
+  searchInput.value = '';
+  suggestionsContainer.style.display = 'none';
+});
+
+homeBtn.addEventListener('click', () => {
+  switchView('homePage');
+  searchInput.value = '';
+  suggestionsContainer.style.display = 'none';
+});
+
+dmcBtn.addEventListener('click', () => {
+  switchView('dmcPage'); 
+  searchInput.value = '';
+  suggestionsContainer.style.display = 'none';
+});
+
+disclaimer.addEventListener('click', () => {
+  switchView('disclaimerPage'); 
+  searchInput.value = '';
+  suggestionsContainer.style.display = 'none';
+});
+
+termsBtn.addEventListener('click', () => {
+  switchView('termsPage'); 
+  searchInput.value = '';
+  suggestionsContainer.style.display = 'none';
+});
+
+privacyBtn.addEventListener('click', () => {
+  switchView('privacyPage'); 
+  searchInput.value = '';
+  suggestionsContainer.style.display = 'none';
+});
+
   const moodGenreMap = {
   Party: ["pop", "dance", "electronic", "reggae", "jazz", "nova beats", "echo drift"],
   Chill: ["lofi", "ambient", "acoustic", "jazz"],
@@ -786,12 +988,7 @@ document.getElementById('genresBtn').addEventListener('click', () => {
 });
 
 
-  homeBtn.addEventListener('click', () => {
-  switchView('homePage'); // instead of switchView(false)
-  searchInput.value = '';
-  suggestionsContainer.style.display = 'none';
-});
-
+  
   searchInput.addEventListener('input', handleSearchInput);
 
   window.onload = function () {
