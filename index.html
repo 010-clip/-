@@ -590,37 +590,29 @@ footer {
 
 
   function handleSearch() {
-  const input = searchInput.value.trim().toLowerCase();
-  if (!input) {
-    alert("Please enter a search term or URL.");
-    return;
-  }
-
-  const matched = filterSongs(songsData, input, {
-    exclude: ['date&time', 'facebook', 'x', 'instagram', 'tiktok', 'youtube', 'spotify', 'itunes']
-  });
-
-  resultsPlaceholder.innerHTML = matched.length
-    ? matched.map(renderTrackCard).join('')
-    : `<p>No results found for "${input}".</p>`;
-
-  if (!searchHistory.includes(input)) {
-    searchHistory.push(input);
-    localStorage.setItem('searchHistory', JSON.stringify(searchHistory));
-  }
-
-  suggestionsContainer.style.display = 'none';
-  switchView('searchResults');
-
-  // Check if there's a song ID in the hash and open the popup for it
-  const hash = window.location.hash.slice(1); // Get the song ID from the hash
-  if (hash) {
-    const match = songsData.find(song => generateSongID(song) === hash);
-    if (match) {
-      showPopup(match);
+    const input = searchInput.value.trim().toLowerCase();
+    if (!input) {
+      alert("Please enter a search term or URL.");
+      return;
     }
+
+    const matched = filterSongs(songsData, input, {
+      exclude: ['date&time', 'facebook', 'x', 'instagram', 'tiktok', 'youtube', 'spotify', 'itunes']
+    });
+
+    resultsPlaceholder.innerHTML = matched.length
+      ? matched.map(renderTrackCard).join('')
+      : `<p>No results found for "${input}".</p>`;
+
+    if (!searchHistory.includes(input)) {
+      searchHistory.push(input);
+      localStorage.setItem('searchHistory', JSON.stringify(searchHistory));
+    }
+
+    suggestionsContainer.style.display = 'none';
+    switchView('searchResults');
+;
   }
-}
 
   function filterSongs(data, keyword, options = {}) {
     const { exclude = [] } = options;
@@ -803,26 +795,28 @@ document.getElementById('genresBtn').addEventListener('click', () => {
   searchInput.addEventListener('input', handleSearchInput);
 
   window.onload = function () {
-  loadSongs();
+  loadSongs(); // Make sure songs are loaded
 
-  const hash = window.location.hash.slice(1); // Get the hash part of the URL (e.g., song-id)
-  
-  // Check for matching song ID in the hash and show the song in the search results
+  // Check for the song ID in the URL hash only after the songs data is fully loaded
+  const hash = window.location.hash.slice(1);
   if (hash) {
-    setTimeout(() => {
-      // Populate search results first
-      handleSearch(); // This will populate the search results based on the hash
-
-      // After the results are populated, look for the song by hash
-      const match = songsData.find(song => generateSongID(song) === hash);
-      if (match) {
-        showPopup(match); // Show the popup for the matched song
-      }
-    }, 500); // Wait for the songs data to load
+    checkForSongInHash(hash);
   }
 };
 
+// This function checks if the song ID from the URL matches any song in the songsData
+function checkForSongInHash(hash) {
+  // Ensure songsData is loaded before checking the hash
+  if (songsData.length === 0) {
+    setTimeout(() => checkForSongInHash(hash), 100); // Retry if songsData is not loaded yet
+    return;
+  }
 
+  const match = songsData.find(song => generateSongID(song) === hash);
+  if (match) {
+    showPopup(match); // Show the popup with the matched song
+  }
+}
 
   
   // Close suggestions container when clicking outside
@@ -841,13 +835,12 @@ let selectedSong = null;
 function showPopup(song) {
   selectedSong = song;
   const defaultCoverURL = 'https://upload.wikimedia.org/wikipedia/commons/3/3c/No-album-art.png'; // Your default cover
-  
-  // Generate Song ID and Share Link
-  const songID = generateSongID(song);
-  const shareURL = `${window.location.origin}/-/#${songID}`; // The share URL includes the song ID in the hash
-  
-  // Set Share icon's link
-  document.getElementById('shareLink').href = shareURL;
+// Generate Song ID and Share Link
+const songID = generateSongID(song);
+const shareURL = `${window.location.origin}/#${songID}`;
+
+// Set Share icon's link
+document.getElementById('shareLink').href = shareURL;
 
   // Use the song's cover if it exists, otherwise use the default
   document.getElementById('popupCover').src = song.cover || defaultCoverURL;
@@ -888,22 +881,21 @@ function playPreview() {
 }
 
 function renderTrackCard(song) {
-  const defaultCoverURL = 'https://upload.wikimedia.org/wikipedia/commons/3/3c/No-album-art.png'; // Your default cover
+    const defaultCoverURL = 'https://upload.wikimedia.org/wikipedia/commons/3/3c/No-album-art.png'; // Your default cover
 
-  // Create a song JSON string to pass it to the popup function
-  const songJSON = encodeURIComponent(JSON.stringify(song));
+    // Create a song JSON string to pass it to the popup function
+    const songJSON = encodeURIComponent(JSON.stringify(song));
 
-  return `
-    <div class="track-card" onclick='showPopup(JSON.parse(decodeURIComponent("${songJSON}"))); window.location.hash = "#${generateSongID(song)}"'>
-      <img id="defaultSongCover" src="${defaultCoverURL}" alt="${song.songTitle} cover">
-      <div class="track-info">
-        <h4>${song.songTitle}</h4>
-        <p>${song.artistName}${song.featuredArtist ? " ft. " + song.featuredArtist : ""}</p>
+    return `
+      <div class="track-card" onclick='showPopup(JSON.parse(decodeURIComponent("${songJSON}")))'>
+        <img id="defaultSongCover" src="${defaultCoverURL}" alt="${song.songTitle} cover">
+        <div class="track-info">
+          <h4>${song.songTitle}</h4>
+          <p>${song.artistName}${song.featuredArtist ? " ft. " + song.featuredArtist : ""}</p>
+        </div>
       </div>
-    </div>
-  `;
-}
-
+    `;
+  }
 
 const dev3 = document.getElementById('dev3');
 const dev3Title = document.getElementById('dev3Title');
