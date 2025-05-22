@@ -797,15 +797,17 @@ document.getElementById('genresBtn').addEventListener('click', () => {
   window.onload = function () {
   loadSongs();
 
-  const hash = window.location.hash.slice(1);
+  const hash = window.location.hash.slice(1); // Get the hash part of the URL (e.g., song-id)
   if (hash) {
     // Check for matching song ID
     setTimeout(() => {
       const match = songsData.find(song => generateSongID(song) === hash);
-      if (match) showPopup(match);
+      if (match) showPopup(match);  // This will show the popup for the song
     }, 500); // Wait for songsData to load
   }
 };
+
+
 
   
   // Close suggestions container when clicking outside
@@ -824,12 +826,13 @@ let selectedSong = null;
 function showPopup(song) {
   selectedSong = song;
   const defaultCoverURL = 'https://upload.wikimedia.org/wikipedia/commons/3/3c/No-album-art.png'; // Your default cover
-// Generate Song ID and Share Link
-const songID = generateSongID(song);
-const shareURL = `${window.location.origin}/#${songID}`;
-
-// Set Share icon's link
-document.getElementById('shareLink').href = shareURL;
+  
+  // Generate Song ID and Share Link
+  const songID = generateSongID(song);
+  const shareURL = `${window.location.origin}/my-repository-name/#${songID}`; // Include the repository name or subdomain
+  
+  // Set Share icon's link
+  document.getElementById('shareLink').href = shareURL;
 
   // Use the song's cover if it exists, otherwise use the default
   document.getElementById('popupCover').src = song.cover || defaultCoverURL;
