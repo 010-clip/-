@@ -5,8 +5,10 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>MP3 Search & Convert</title>
+  <title>AudioWaves</title>
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+  
+
   <style>
     * {
       margin: 0;
@@ -136,8 +138,8 @@ section {
 
 .recent-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
-  gap: 20px;
+  grid-template-columns: repeat(auto-fit, minmax(auto, 1fr));
+  gap: 10px;
 }
 
 
@@ -150,6 +152,9 @@ section {
   overflow: hidden;
   padding: 10px;
   text-align: left;
+  flex: 0 0 auto; /* Don't grow, don't shrink, use content size */
+  min-width: 200px;
+  max-width: 250px;
 }
 
 .track-info {
@@ -223,9 +228,6 @@ footer {
   display: block;
   opacity: 1;
 }
-
-
-
 
 .suggestions-container {
   position: absolute;
@@ -479,10 +481,34 @@ footer {
     font-size: 0.95rem;
   }
 }
-.footer-links a {
-    color: white;
-    text-decoration: none;
-  }
+
+/* Generic scrollable container with dynamic rows */
+.scrollable-rows {
+  display: grid;
+  grid-auto-flow: column;
+  grid-template-rows: repeat(var(--row-count, 1), 1fr);
+  overflow-x: auto;
+  overflow-y: hidden;
+  gap: 1rem;
+  scroll-behavior: smooth;
+  padding-bottom: 10px;
+}
+.scrollable-rows::-webkit-scrollbar {
+  height: 8px;
+}
+.scrollable-rows::-webkit-scrollbar-thumb {
+  background: #888;
+  border-radius: 10px;
+}
+.scrollable-rows::-webkit-scrollbar-thumb:hover {
+  background: #555;
+}
+
+.scrollable-track-card {
+  min-width: 200px;
+  max-width: 250px;
+  flex: none;
+}
 
 
   </style>
@@ -490,7 +516,7 @@ footer {
 <body>
 
   <header>
-    <div class="logo">hchhch</div>
+    <div class="logo">     </div>
     <nav>
       <a id="homeBtn">Home</a>
       <div id="genresDropdown" class="dropdown">
@@ -520,27 +546,28 @@ footer {
     
     <section>
       <div class="section-title">Recently Added</div>
-      <div class="recent-grid">
+      <div class="recent-grid scrollable-rows" style="--row-count: 2;">
       </div>
     </section>
 
 
     <section>
       <div class="section-title">Genres</div>
-      <div class="categories">
+      <div class="categories scrollable-rows" style="--row-count: 1;">
       </div>
     </section>
 
 
   <section>
   <div class="section-title">Mood</div>
-  <div class="moods">
-    <div class="mood-item" style="background-image: url('https://i.postimg.cc/QCM1L9xx/party.webp');" onclick="loadMoodSongs('Party')">Party</div>
-    <div class="mood-item" style="background-image: url('https://img.freepik.com/premium-photo/handsome-man-chilling-listening-music-headphones-home-sofa_624325-3454.jpg');" onclick="loadMoodSongs('Chill')">Chill</div>
-    <div class="mood-item" style="background-image: url('https://i.postimg.cc/5NfJ5BKC/study.webp');" onclick="loadMoodSongs('Study')">Study</div>
-    <div class="mood-item" style="background-image: url('https://i.postimg.cc/t4K9LYNd/workout.webp');" onclick="loadMoodSongs('Workout')">Workout</div>
-    <div class="mood-item" style="background-image: url('https://i.postimg.cc/5y4PySbB/sleep.webp');" onclick="loadMoodSongs('Sleep')">Sleep</div>
+  <div class="moods scrollable-rows" style="--row-count: 1;">
+  <div class="mood-item lazy-bg" data-bg="https://i.postimg.cc/QCM1L9xx/party.webp" onclick="loadMoodSongs('Party')">Party</div>
+  <div class="mood-item lazy-bg" data-bg="https://img.freepik.com/premium-photo/handsome-man-chilling-listening-music-headphones-home-sofa_624325-3454.jpg" onclick="loadMoodSongs('Chill')">Chill</div>
+  <div class="mood-item lazy-bg" data-bg="https://i.postimg.cc/5NfJ5BKC/study.webp" onclick="loadMoodSongs('Study')">Study</div>
+  <div class="mood-item lazy-bg" data-bg="https://i.postimg.cc/t4K9LYNd/workout.webp" onclick="loadMoodSongs('Workout')">Workout</div>
+  <div class="mood-item lazy-bg" data-bg="https://i.postimg.cc/5y4PySbB/sleep.webp" onclick="loadMoodSongs('Sleep')">Sleep</div>
   </div>
+
 </section>
 
 
@@ -552,7 +579,7 @@ footer {
 
   <div id="searchResults" class="page-section">
     <section>
-      <div class="section-title">Search Results</div>
+      <div class="section-title" >Search Results</div>
       <p id="resultsPlaceholder">Type a search query and press "Search"...</p>
     </section>
   </div>
@@ -617,37 +644,7 @@ footer {
   <div id="aboutPage" class="page-section">
     <div id="infoPages">
   <section>
-    <h1>About Us</h1>
-    <p>Welcome to AudioWaves, a unique platform built to empower both music lovers and artists. Our vision is simple: create a space where music is accessible to everyone, while actively supporting and promoting the creators behind the sound.</p>
-
-    <h2>Our Mission</h2>
-    <p>At AudioWaves, we believe that music should be free to discover, regardless of your ability to pay for subscriptions. We aim to bridge the gap between users who can’t afford streaming platforms and those who can — encouraging the latter to support artists directly through official channels. Our mission is to educate listeners on the value of streaming platforms, while also offering an accessible alternative for those left out by paywalls.</p>
-
-    <h2>What Makes AudioWaves Different</h2>
-    <p>Unlike traditional music platforms, AudioWaves doesn’t store or host music files. Instead, we function as a community-driven hub where both users and artists upload content in the form of third-party links from YouTube. This means all music here is traceable to its original source, giving credit where it’s due.</p>
-    <p>We don’t prioritize fame or status — we prioritize the music. Whether you're an independent artist just starting out or an international chart-topper, your work is welcome here. Our platform focuses on the quality and message of the music, not the size of your following.</p>
-
-    <h2>Features</h2>
-    <ul>
-      <li>Free Access to Music: Discover tracks from a wide range of genres without the need for a subscription.</li>
-      <li>Support for Artists: We promote music through strategic campaigns that benefit both creators and their streaming profiles.</li>
-      <li>Community-Driven Uploads: Anyone can contribute by sharing third-party links to music they love or create.</li>
-      <li>Non-Host Policy: We don’t store any media files. All content on AudioWaves is embedded or linked from other platforms.</li>
-      <li>Artist Equality: We don’t differentiate between “big” or “small” artists — only between good music and great music.</li>
-      <li>User-Friendly Interface: Our website is built for easy navigation, allowing you to find and play music quickly with just a few clicks.</li>
-      <li>Standard-Quality Audio: Enjoy accessible streaming through third-party links. For the best High Quality audio experience, we encourage users to check out platforms like Spotify, Apple Music and more...</li>
-      <li>Mobile Compatibility: AudioWaves works seamlessly on mobile devices, so you can discover and enjoy music wherever you are.</li>
-      <li>Download Options: We offer downloads for personal offline listening. Please respect usage terms and only download for personal, non-commercial use.</li>
-    </ul>
-
-    <h2>A Platform with Purpose</h2>
-    <p>AudioWaves isn’t just another music tool — it’s a movement. We’re here to show how streaming and free listening can coexist, each serving a purpose in the modern music landscape. Our goal is to raise awareness of how every stream, share, and follow can impact an artist’s career.</p>
-
-    <h2>How It Works</h2>
-    <p>It’s easy. Find a track you like, click on it, download, and listen. If you love it and can afford it, follow the artist on streaming platforms to support their journey. If you can’t, enjoy the music freely — we’ve built this space with you in mind too.</p>
-
-    <h2>Join the Movement</h2>
-    <p>Whether you're here to find new tunes, share your own, or support artists in a meaningful way, AudioWaves is your stage. Music is for everyone — and AudioWaves makes sure it stays that way.</p>
+    
   </section>
   </div>
 </div>
@@ -698,11 +695,12 @@ footer {
       <a href="#"><i class="fab fa-linkedin"></i></a>
     </div>
     <div class="footer-links" style="margin-top: 15px;">
-    <a href="#">DMCA</a> |
-    <a href="#">Disclaimer</a> |
-    <a href="#">Terms of Use</a> |
-    <a href="#">Privacy Policy</a>
-  </div>
+  <a href="#" id="dmcaBtn">DMCA</a> |
+  <a href="#" id="disclaimerBtn">Disclaimer</a> |
+  <a href="#" id="termsBtn">Terms of Use</a> |
+  <a href="#" id="privacyBtn">Privacy Policy</a>
+</div>
+
     <div class="app-btn-container">
       <button class="app-btn">
         <i class="fas fa-download"></i> Download our app now!
@@ -747,29 +745,31 @@ homeBtn.addEventListener('click', () => {
   suggestionsContainer.style.display = 'none';
 });
 
-dmcBtn.addEventListener('click', () => {
-  switchView('dmcPage'); 
+// Add footer link click handlers
+document.getElementById('dmcaBtn').addEventListener('click', () => {
+  switchView('dmcaPage');
   searchInput.value = '';
   suggestionsContainer.style.display = 'none';
 });
 
-disclaimer.addEventListener('click', () => {
-  switchView('disclaimerPage'); 
+document.getElementById('disclaimerBtn').addEventListener('click', () => {
+  switchView('disclaimerPage');
   searchInput.value = '';
   suggestionsContainer.style.display = 'none';
 });
 
-termsBtn.addEventListener('click', () => {
-  switchView('termsPage'); 
+document.getElementById('termsBtn').addEventListener('click', () => {
+  switchView('termsPage');
   searchInput.value = '';
   suggestionsContainer.style.display = 'none';
 });
 
-privacyBtn.addEventListener('click', () => {
-  switchView('privacyPage'); 
+document.getElementById('privacyBtn').addEventListener('click', () => {
+  switchView('privacyPage');
   searchInput.value = '';
   suggestionsContainer.style.display = 'none';
 });
+
 
   const moodGenreMap = {
   Party: ["pop", "dance", "electronic", "reggae", "jazz", "nova beats", "echo drift"],
@@ -919,6 +919,41 @@ privacyBtn.addEventListener('click', () => {
     xhr.send();
   }
   
+  function loadGenres() {
+  const xhr = new XMLHttpRequest();
+  xhr.open("GET", "https://api.jsonbin.io/v3/b/68305bcb8561e97a501a7e02/latest", true);
+  xhr.setRequestHeader("X-Master-Key", "$2a$10$q/Zpu/KXYgasJ9lq14u7weHkElSpbGQv6Zf1tmtW3J/lR2OrJYeUK");
+
+  xhr.onreadystatechange = function () {
+    if (xhr.readyState === 4 && xhr.status === 200) {
+      const response = JSON.parse(xhr.responseText);
+      const genresList = response.record;
+      renderGenres(genresList);
+    }
+  };
+
+  xhr.send();
+}
+
+function renderGenres(genresList) {
+  const genresContainer = document.querySelector('.categories');
+  const genresDropdown = document.getElementById('genresList');
+
+  // Home page genres section with lazy-bg and data-bg
+  genresContainer.innerHTML = genresList.map(genre => `
+    <div class="category-item lazy-bg" data-bg="${genre.genreimage}" onclick="loadGenreSongs('${genre.genrename}')">
+      <span>${genre.genrename}</span>
+    </div>
+  `).join('');
+
+  // Dropdown genres menu
+  genresDropdown.innerHTML = genresList.map(genre => `
+    <a onclick="loadGenreSongs('${genre.genrename}'); toggleDropdown(false);">${genre.genrename}</a>
+  `).join('');
+
+  lazyLoadBackgrounds(); // Trigger lazy loading
+}
+
 
   function populateRecentlyAdded() {
     const sorted = [...songsData].sort((a, b) => new Date(b["date&time"]) - new Date(a["date&time"]));
@@ -926,7 +961,7 @@ privacyBtn.addEventListener('click', () => {
       exclude: ['date&time', 'facebook', 'x', 'instagram', 'tiktok', 'youtube', 'spotify', 'itunes']
     });
 
-    recentlyAddedContainer.innerHTML = filtered.slice(0, 6).map(renderTrackCard).join('');
+    recentlyAddedContainer.innerHTML = filtered.slice(0, 20).map(renderTrackCard).join('');
   }
 
   function populateGenres() {
@@ -993,13 +1028,42 @@ document.getElementById('genresBtn').addEventListener('click', () => {
 
   window.onload = function () {
   loadSongs(); // Make sure songs are loaded
+  loadGenres();
 
-  // Check for the song ID in the URL hash only after the songs data is fully loaded
+  
+  // Footer buttons
+  document.getElementById('dmcaBtn').addEventListener('click', () => {
+    switchView('dmcaPage');
+    searchInput.value = '';
+    suggestionsContainer.style.display = 'none';
+  });
+
+  document.getElementById('disclaimerBtn').addEventListener('click', () => {
+    switchView('disclaimerPage');
+    searchInput.value = '';
+    suggestionsContainer.style.display = 'none';
+  });
+
+  document.getElementById('termsBtn').addEventListener('click', () => {
+    switchView('termsPage');
+    searchInput.value = '';
+    suggestionsContainer.style.display = 'none';
+  });
+
+  document.getElementById('privacyBtn').addEventListener('click', () => {
+    switchView('privacyPage');
+    searchInput.value = '';
+    suggestionsContainer.style.display = 'none';
+  });
+
+  // Handle hash on page load
   const hash = window.location.hash.slice(1);
   if (hash) {
     checkForSongInHash(hash);
   }
 };
+
+  
 
 // This function checks if the song ID from the URL matches any song in the songsData
 function checkForSongInHash(hash) {
@@ -1156,6 +1220,38 @@ function generateSongID(song) {
   return `${artist}-${title}${featured ? '-' + featured : ''}-${genre}`;
 }
 
+
+function setBackgroundImage(el) {
+  const bg = el.getAttribute('data-bg');
+  if (bg) {
+    el.style.backgroundImage = `url('${bg}')`;
+    el.classList.remove('lazy-bg');
+    el.removeAttribute('data-bg');
+  }
+}
+
+function lazyLoadBackgrounds() {
+  const lazyElements = document.querySelectorAll('.lazy-bg');
+
+  if ('IntersectionObserver' in window) {
+    const observer = new IntersectionObserver((entries, obs) => {
+      entries.forEach(entry => {
+        if (entry.isIntersecting) {
+          setBackgroundImage(entry.target);
+          obs.unobserve(entry.target);
+        }
+      });
+    });
+
+    lazyElements.forEach(el => observer.observe(el));
+  } else {
+    // Fallback: Load all
+    lazyElements.forEach(setBackgroundImage);
+  }
+}
+
+// Call after content loads
+window.addEventListener('load', lazyLoadBackgrounds);
 </script>
 
 
