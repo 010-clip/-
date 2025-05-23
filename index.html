@@ -1,4 +1,6 @@
-<html lang="en"> 
+
+ 
+ <html lang="en"> 
 
 <head>
   <meta charset="UTF-8" />
@@ -128,6 +130,7 @@ section {
   font-size: 1.2rem;
   font-weight: bold;
   position: relative;
+  background-repeat: no-repeat;
 }
 
 .category-item:hover, .mood-item:hover {
@@ -917,40 +920,41 @@ document.getElementById('privacyBtn').addEventListener('click', () => {
     xhr.send();
   }
   
-  function loadGenres() {
-  const xhr = new XMLHttpRequest();
-  xhr.open("GET", "https://api.jsonbin.io/v3/b/68305bcb8561e97a501a7e02/latest", true);
-  xhr.setRequestHeader("X-Master-Key", "$2a$10$q/Zpu/KXYgasJ9lq14u7weHkElSpbGQv6Zf1tmtW3J/lR2OrJYeUK");
-
-  xhr.onreadystatechange = function () {
-    if (xhr.readyState === 4 && xhr.status === 200) {
-      const response = JSON.parse(xhr.responseText);
-      const genresList = response.record;
-      renderGenres(genresList);
+  function fetchGenresAndRender() {
+  fetch("https://api.jsonbin.io/v3/b/68305bcb8561e97a501a7e02/latest", {
+    headers: {
+      'X-Master-Key': '$2a$10$q/Zpu/KXYgasJ9lq14u7weHkElSpbGQv6Zf1tmtW3J/lR2OrJYeUK' // Replace with your actual key
     }
-  };
-
-  xhr.send();
+  })
+  .then(res => res.json())
+  .then(data => {
+    const genresFromBin = data.record || [];
+    renderGenresWithImages(genresFromBin);
+  })
+  .catch(err => {
+    console.error('Failed to load genres:', err);
+  });
 }
 
-function renderGenres(genresList) {
-  const genresContainer = document.querySelector('.categories');
-  const genresDropdown = document.getElementById('genresList');
+function renderGenresWithImages(genresList) {
+  // Home Page Boxes
+  genresContainer.innerHTML = genresList.map(genreObj => {
+    const { genrename, genreimage } = genreObj;
+    return `
+      <div class="category-item lazy-bg" data-bg="${genreimage}" onclick="loadGenreSongs('${genrename}')">
+        <span>${genrename}</span>
+      </div>
+    `;
+  }).join('');
 
-  genresContainer.innerHTML = genresList.map(genre => `
-    <div class="category-item lazy-bg" data-bg="${genre.genreimage}" onclick="loadGenreSongs('${genre.genrename}')">
-      <span>${genre.genrename}</span>
-    </div>
+  // Dropdown Menu
+  const genresListEl = document.getElementById('genresList');
+  genresListEl.innerHTML = genresList.map(genreObj => `
+    <a onclick="loadGenreSongs('${genreObj.genrename}'); toggleDropdown(false);">${genreObj.genrename}</a>
   `).join('');
 
-  genresDropdown.innerHTML = genresList.map(genre => `
-    <a onclick="loadGenreSongs('${genre.genrename}'); toggleDropdown(false);">${genre.genrename}</a>
-  `).join('');
-
-  // Defer lazy loading until the DOM has updated
-  requestAnimationFrame(() => lazyLoadBackgrounds());
+  lazyLoadBackgrounds(); // Trigger image loading
 }
-
 
 
 
@@ -968,7 +972,7 @@ function renderGenres(genresList) {
 
   // Home page boxes
   genresContainer.innerHTML = genres.map(genre => `
-    <div class="category-item" style="background-image: url('https://via.placeholder.com/160x160');" onclick="loadGenreSongs('${genre}')">
+    <div class="category-item" onclick="loadGenreSongs('${genre}')">
       <span>${genre}</span>
     </div>
   `).join('');
@@ -1027,11 +1031,40 @@ document.getElementById('genresBtn').addEventListener('click', () => {
 
   window.onload = function () {
   loadSongs(); // Make sure songs are loaded
-  loadGenres();
-  setTimeout(() => lazyLoadBackgrounds(), 50);
-
+  fetchGenresAndRender();
 
   
+
+  async function cacheImages() {
+  if (!('caches' in window)) return;
+
+  const cacheName = 'audiowaves-assets';
+  const cache = await caches.open(cacheName);
+
+  // Select all elements with data-bg or class lazy-bg
+  const imageElements = document.querySelectorAll('[data-bg], .lazy-bg');
+  const imageUrls = Array.from(imageElements)
+    .map(el => el.getAttribute('data-bg'))
+    .filter(url => !!url); // remove null/undefined
+
+  // Deduplicate URLs
+  const uniqueUrls = [...new Set(imageUrls)];
+
+  for (const url of uniqueUrls) {
+    try {
+      const response = await fetch(url, { mode: 'no-cors' });
+      if (response.ok || response.type === 'opaque') {
+        await cache.put(url, response);
+        console.log(`Cached: ${url}`);
+      } else {
+        console.warn(`Failed to cache: ${url}`);
+      }
+    } catch (err) {
+      console.error(`Error caching ${url}:`, err);
+    }
+  }
+}
+
   // Footer buttons
   document.getElementById('dmcaBtn').addEventListener('click', () => {
     switchView('dmcaPage');
@@ -1096,7 +1129,7 @@ let selectedSong = null;
 
 function showPopup(song) {
   selectedSong = song;
-  const defaultCoverURL = 'https://upload.wikimedia.org/wikipedia/commons/3/3c/No-album-art.png'; // Your default cover
+  const defaultCoverURL = 'https://is.gd/mkniCO'; // Your default cover
 // Generate Song ID and Share Link
 const songID = generateSongID(song);
 const shareURL = `${window.location.origin}/-/#${songID}`;
@@ -1223,6 +1256,8 @@ function generateSongID(song) {
 
 
 function setBackgroundImage(el) {
+  if (!el || !el.classList.contains('lazy-bg')) return;
+
   const bg = el.getAttribute('data-bg');
   if (bg) {
     el.style.backgroundImage = `url('${bg}')`;
@@ -1230,6 +1265,7 @@ function setBackgroundImage(el) {
     el.removeAttribute('data-bg');
   }
 }
+
 
 function lazyLoadBackgrounds() {
   const lazyElements = document.querySelectorAll('.lazy-bg');
@@ -1244,20 +1280,21 @@ function lazyLoadBackgrounds() {
       });
     });
 
-    lazyElements.forEach(el => observer.observe(el));
+    lazyElements.forEach(el => {
+      // Double-check it's not already loaded
+      if (el.classList.contains('lazy-bg') && el.getAttribute('data-bg')) {
+        observer.observe(el);
+      }
+    });
   } else {
-    // Fallback
+    // Fallback: just load all
     lazyElements.forEach(setBackgroundImage);
   }
 }
 
-document.addEventListener('visibilitychange', () => {
-  if (document.visibilityState === 'visible') {
-    lazyLoadBackgrounds(); // Retry lazy loading when tab is focused
-  }
+window.addEventListener('load', () => {
+  setTimeout(lazyLoadBackgrounds, 200); // delay a bit to let layout settle
 });
-
-window.addEventListener('scroll', lazyLoadBackgrounds);
 
 </script>
 
