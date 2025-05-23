@@ -1,6 +1,4 @@
-
- 
- <html lang="en"> 
+<html lang="en"> 
 
 <head>
   <meta charset="UTF-8" />
@@ -939,20 +937,21 @@ function renderGenres(genresList) {
   const genresContainer = document.querySelector('.categories');
   const genresDropdown = document.getElementById('genresList');
 
-  // Home page genres section with lazy-bg and data-bg
   genresContainer.innerHTML = genresList.map(genre => `
     <div class="category-item lazy-bg" data-bg="${genre.genreimage}" onclick="loadGenreSongs('${genre.genrename}')">
       <span>${genre.genrename}</span>
     </div>
   `).join('');
 
-  // Dropdown genres menu
   genresDropdown.innerHTML = genresList.map(genre => `
     <a onclick="loadGenreSongs('${genre.genrename}'); toggleDropdown(false);">${genre.genrename}</a>
   `).join('');
 
-  lazyLoadBackgrounds(); // Trigger lazy loading
+  // Defer lazy loading until the DOM has updated
+  requestAnimationFrame(() => lazyLoadBackgrounds());
 }
+
+
 
 
   function populateRecentlyAdded() {
@@ -1029,6 +1028,8 @@ document.getElementById('genresBtn').addEventListener('click', () => {
   window.onload = function () {
   loadSongs(); // Make sure songs are loaded
   loadGenres();
+  setTimeout(() => lazyLoadBackgrounds(), 50);
+
 
   
   // Footer buttons
@@ -1245,13 +1246,19 @@ function lazyLoadBackgrounds() {
 
     lazyElements.forEach(el => observer.observe(el));
   } else {
-    // Fallback: Load all
+    // Fallback
     lazyElements.forEach(setBackgroundImage);
   }
 }
 
-// Call after content loads
-window.addEventListener('load', lazyLoadBackgrounds);
+document.addEventListener('visibilitychange', () => {
+  if (document.visibilityState === 'visible') {
+    lazyLoadBackgrounds(); // Retry lazy loading when tab is focused
+  }
+});
+
+window.addEventListener('scroll', lazyLoadBackgrounds);
+
 </script>
 
 
