@@ -690,10 +690,10 @@ footer {
   <footer>
     <div>Follow us on:</div>
     <div class="social-icons">
-      <a href="#"><i class="fab fa-facebook"></i></a>
-      <a href="#"><i class="fab fa-instagram"></i></a>
-      <a href="#"><i class="fab fa-x-twitter"></i></a>
-      <a href="#"><i class="fab fa-linkedin"></i></a>
+      <a href="#"><img id="facebook-icon" alt="facebook"></a>
+      <a href="#"><img id="instagram-icon" alt="instagram"></a>
+      <a href="#"><img id="twitter-icon" alt="twitter"></a>
+      <a href="#"><img id="linkedin-icon" alt="linkedin"></a>
     </div>
     <div class="footer-links" style="margin-top: 15px;">
   <a href="#" id="dmcaBtn">DMCA</a> |
@@ -1295,6 +1295,35 @@ function lazyLoadBackgrounds() {
 window.addEventListener('load', () => {
   setTimeout(lazyLoadBackgrounds, 200); // delay a bit to let layout settle
 });
+
+   // JSON object containing the SVG icon data
+const iconData = {
+  "facebook-icon": {
+    "svg": "<svg xmlns='http://www.w3.org/2000/svg' width='24' height='24' viewBox='0 0 24 24'><path d='M12 2.04c5.52 0 10 4.48 10 10s-4.48 10-10 10-10-4.48-10-10 4.48-10 10-10zm0 18c4.41 0 8-3.59 8-8s-3.59-8-8-8-8 3.59-8 8 3.59 8 8 8zm1.38-12.92c-.28-.06-.56-.12-.85-.12-.74 0-1.45.24-2.03.67-.51-.41-1.15-.67-1.84-.67-1.71 0-3.11 1.38-3.11 3.09v2.45h-2.34v-3.03h2.34v-.83c0-2.69 1.64-4.28 4.12-4.28 1.19 0 2.38.09 2.66.13v2.73z' /></svg>"
+  },
+  "instagram-icon": {
+    "svg": "<svg xmlns='http://www.w3.org/2000/svg' width='24' height='24' viewBox='0 0 24 24'><path d='M12 2.04c5.52 0 10 4.48 10 10s-4.48 10-10 10-10-4.48-10-10 4.48-10 10-10zm0 18c4.41 0 8-3.59 8-8s-3.59-8-8-8-8 3.59-8 8 3.59 8 8 8zm-1.5-4h3v-1h-3v-2h2v-1h-2v-2h1.5v-1h-1.5v-2.5c0-.66.34-1 1-1h1.5v-1h-2.5c-2.76 0-5 2.24-5 5v2h-2v2h2v7h3v-7z' /></svg>"
+  },
+  "twitter-icon": {
+    "svg": "<svg xmlns='http://www.w3.org/2000/svg' width='24' height='24' viewBox='0 0 24 24'><path d='M22.23 6.23c-.77.34-1.59.57-2.46.67-.95-.89-2.16-1.44-3.53-1.44-2.68 0-4.87 2.19-4.87 4.87 0 .38.04.75.12 1.1-4.05-.2-7.63-2.14-10.03-5.08-.42.72-.65 1.56-.65 2.46 0 1.69.86 3.17 2.17 4.04-.8-.03-1.56-.25-2.22-.62v.06c0 2.38 1.69 4.37 3.94 4.82-.41.11-.84.17-1.28.17-.31 0-.61-.03-.91-.08.62 1.94 2.42 3.35 4.57 3.35-1.67 1.3-3.77 2.08-6.06 2.08-.39 0-.77-.02-1.16-.06 2.14 1.37 4.69 2.17 7.44 2.17 8.92 0 13.8-7.4 13.8-13.8 0-.21-.01-.42-.03-.62.95-.69 1.78-1.56 2.43-2.55z' /></svg>"
+  },
+  "linkedin-icon": {
+    "svg": "<svg xmlns='http://www.w3.org/2000/svg' width='24' height='24' viewBox='0 0 24 24'><path d='M12 2.04c5.52 0 10 4.48 10 10s-4.48 10-10 10-10-4.48-10-10 4.48-10 10-10zm0 18c4.41 0 8-3.59 8-8s-3.59-8-8-8-8 3.59-8 8 3.59 8 8 8zm-1.5-4h3v-1h-3v-2h2v-1h-2v-2h1.5v-1h-1.5v-2.5c0-.66.34-1 1-1h1.5v-1h-2.5c-2.76 0-5 2.24-5 5v2h-2v2h2v7h3v-7z' /></svg>"
+  }
+};
+
+// Function to inject SVGs dynamically
+function loadSVGs() {
+  document.querySelectorAll('img[id]').forEach(img => {
+    const iconId = img.id;
+    if (iconData[iconId]) {
+      img.innerHTML = iconData[iconId].svg;
+    }
+  });
+}
+
+// Call the function to load the SVGs
+loadSVGs();
 
 </script>
 
