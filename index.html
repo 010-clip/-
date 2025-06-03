@@ -102,42 +102,45 @@ section {
   margin-bottom: 1rem;
 }
 
-.categories, .moods {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 10px;
-}
 
-.category-item, .mood-item {
-  background-color: #000;
-  color: white;
-  padding: 10px 15px;
-  border-radius: 20px;
-  cursor: pointer;
-  transition: background 0.3s;
+
+.mood-item, .category-item {
+    width: 160px;
+    height: 160px;
+    position: relative;
+    border-radius: 20px;
+    overflow: hidden;
+    cursor: pointer;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-size: 1.2rem;
+    font-weight: bold;
+    color: white;
+    transition: background-color 0.3s;
+    background-color: #000; /* fallback */
+  }
   
-}
-
-.category-item, .mood-item {
-  width: 160px;
-  height: 160px;
-  background-size: cover;
-  background-position: center;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  text-align: center;
-  font-size: 1.2rem;
-  font-weight: bold;
-  position: relative;
-  background-repeat: no-repeat;
-  background-attachment: relative;
-}
-
-.category-item:hover, .mood-item:hover {
-  background-color: rgba(0, 0, 0, 0.7);
-}
-
+  .mood-item img, .category-item img {
+    position: absolute;
+    top: 0; left: 0; width: 100%; height: 100%;
+    object-fit: cover;
+    z-index: 1;
+    filter: brightness(0.5);
+    transition: filter 0.3s;
+  }
+  
+  .mood-item span, .category-item span {
+    position: relative;
+    z-index: 2;
+    text-align: center;
+  }
+  
+  .mood-item:hover, .category-item:hover img {
+    filter: brightness(0.7);
+  }
+  
+  
 .recent-grid {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(auto, 1fr));
@@ -626,16 +629,11 @@ footer {
     </section>
 
 
-  <section>
+ <section>
   <div class="section-title">Mood</div>
-  <div class="moods scrollable-rows" style="--row-count: 1;">
-  <div class="mood-item lazy-bg" data-bg="https://i.postimg.cc/QCM1L9xx/party.webp" onclick="loadMoodSongs('Party')">Party</div>
-  <div class="mood-item lazy-bg" data-bg="https://img.freepik.com/premium-photo/handsome-man-chilling-listening-music-headphones-home-sofa_624325-3454.jpg" onclick="loadMoodSongs('Chill')">Chill</div>
-  <div class="mood-item lazy-bg" data-bg="https://i.postimg.cc/5NfJ5BKC/study.webp" onclick="loadMoodSongs('Study')">Study</div>
-  <div class="mood-item lazy-bg" data-bg="https://i.postimg.cc/t4K9LYNd/workout.webp" onclick="loadMoodSongs('Workout')">Workout</div>
-  <div class="mood-item lazy-bg" data-bg="https://i.postimg.cc/5y4PySbB/sleep.webp" onclick="loadMoodSongs('Sleep')">Sleep</div>
+  <div class="moods scrollable-rows" style="--row-count: 1;" id="moodsContainer">
+    <!-- moods will be dynamically injected here -->
   </div>
-
 </section>
 
 
@@ -688,7 +686,25 @@ footer {
    </div>
 </div>
 
+<!-- Genres Page -->
+<div id="Genres" class="page-section">
+  <section>
+    <div class="section-title" id="selectedGenreTitle">Genre: </div>
+    <div id="genreSongsContainer" class="recent-grid">
+      <!-- Songs will be injected here -->
+    </div>
+  </section>
+</div>
 
+<!-- Mood Page -->
+<div id="MoodPage" class="page-section">
+  <section>
+    <div class="section-title" id="selectedMoodTitle">Mood: </div>
+    <div id="moodSongsContainer" class="recent-grid">
+      <!-- Songs will be injected here -->
+    </div>
+  </section>
+</div>
 <!-- About Page -->
 
   <div id="aboutPage" class="page-section">
@@ -987,24 +1003,23 @@ document.getElementById('privacyBtn').addEventListener('click', () => {
 }
 
 function renderGenresWithImages(genresList) {
-  // Home Page Boxes
   genresContainer.innerHTML = genresList.map(genreObj => {
     const { genrename, genreimage } = genreObj;
     return `
-      <div class="category-item lazy-bg" data-bg="${genreimage}" onclick="loadGenreSongs('${genrename}')">
+      <div class="category-item" onclick="loadGenreSongs('${genrename}')">
+        <img src="${genreimage}" alt="${genrename}" loading="lazy" />
         <span>${genrename}</span>
       </div>
     `;
   }).join('');
 
-  // Dropdown Menu
   const genresListEl = document.getElementById('genresList');
   genresListEl.innerHTML = genresList.map(genreObj => `
     <a onclick="loadGenreSongs('${genreObj.genrename}'); toggleDropdown(false);">${genreObj.genrename}</a>
   `).join('');
-
-  lazyLoadBackgrounds(); // Trigger image loading
 }
+
+
 
 
 
@@ -1278,6 +1293,45 @@ function switchSection(sectionToShow) {
   sectionToShow.classList.add('active');
 }
 
+// Define moods data array with name and image URL
+  const moodsData = [
+    {
+      name: "Party",
+      img: "https://i.postimg.cc/QCM1L9xx/party.webp"
+    },
+    {
+      name: "Chill",
+      img: "https://img.freepik.com/premium-photo/handsome-man-chilling-listening-music-headphones-home-sofa_624325-3454.jpg"
+    },
+    {
+      name: "Study",
+      img: "https://i.postimg.cc/5NfJ5BKC/study.webp"
+    },
+    {
+      name: "Workout",
+      img: "https://i.postimg.cc/t4K9LYNd/workout.webp"
+    },
+    {
+      name: "Sleep",
+      img: "https://i.postimg.cc/5y4PySbB/sleep.webp"
+    }
+  ];
+
+  function renderMoods() {
+    const container = document.getElementById('moodsContainer');
+    container.innerHTML = moodsData.map(mood => `
+      <div class="mood-item" onclick="loadMoodSongs('${mood.name}')">
+        <img loading="lazy" src="${mood.img}" alt="${mood.name} mood image" />
+        <span>${mood.name}</span>
+      </div>
+    `).join('');
+  }
+
+  // Call render on page load
+  window.addEventListener('DOMContentLoaded', () => {
+    renderMoods();
+  });
+  
 function loadMoodSongs(mood) {
   const genresForMood = moodGenreMap[mood];
   const filteredSongs = songsData.filter(song =>
@@ -1314,46 +1368,6 @@ function generateSongID(song) {
 }
 
 
-function setBackgroundImage(el) {
-  if (!el || !el.classList.contains('lazy-bg')) return;
-
-  const bg = el.getAttribute('data-bg');
-  if (bg) {
-    el.style.backgroundImage = `url('${bg}')`;
-    el.classList.remove('lazy-bg');
-    el.removeAttribute('data-bg');
-  }
-}
-
-
-function lazyLoadBackgrounds() {
-  const lazyElements = document.querySelectorAll('.lazy-bg');
-
-  if ('IntersectionObserver' in window) {
-    const observer = new IntersectionObserver((entries, obs) => {
-      entries.forEach(entry => {
-        if (entry.isIntersecting) {
-          setBackgroundImage(entry.target);
-          obs.unobserve(entry.target);
-        }
-      });
-    });
-
-    lazyElements.forEach(el => {
-      // Double-check it's not already loaded
-      if (el.classList.contains('lazy-bg') && el.getAttribute('data-bg')) {
-        observer.observe(el);
-      }
-    });
-  } else {
-    // Fallback: just load all
-    lazyElements.forEach(setBackgroundImage);
-  }
-}
-
-window.addEventListener('load', () => {
-  setTimeout(lazyLoadBackgrounds, 200); // delay a bit to let layout settle
-});
 
 </script>
 
