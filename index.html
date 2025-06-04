@@ -177,7 +177,7 @@ section {
   cursor: pointer;
 }
 
-.default-cover-icon {
+.track-card-cover {
   width: 60px;
   height: 60px;
   display: flex;
@@ -189,7 +189,7 @@ section {
   flex-shrink: 0;
 }
 
-.default-cover-icon .icon {
+.track-card-cover .icon {
   width: 40px;
   height: 40px;
   fill: #888;
@@ -329,10 +329,13 @@ footer {
 
 .popup-cover {
   width: 100%;
-  max-height: 250px;
+  height: 250px;
   object-fit: cover;
   border-radius: 10px;
   margin-bottom: 20px;
+  display: block;
+  background: #f0f0f0;
+  fill: #888;
 }
 
 .popup-buttons button {
@@ -366,14 +369,6 @@ footer {
   right: 5px;
   font-size: 2rem;
   cursor: pointer;
-}
-
-#defaultSongCover {
-  width: 60px;
-  height: 60px;
-  object-fit: cover;
-  border-radius: 8px;
-  margin-right: 10px;
 }
 
 .popup-buttons-row {
@@ -619,7 +614,7 @@ footer {
     <div>
     <section>
       <div class="section-title">Recently Added</div>
-      <div class="recent-grid scrollable-rows" style="--row-count: 2; min-height: 160px;">
+      <div class="recent-grid scrollable-rows" style="--row-count: 2; min-height: 170px;">
       </div>
     </section>
     </div>
@@ -628,7 +623,7 @@ footer {
     <div>
     <section>
       <div class="section-title">Genres</div>
-      <div class="categories scrollable-rows" style="--row-count: 1; min-height: 160px;">
+      <div class="categories scrollable-rows" style="--row-count: 1; min-height: 170px;">
       </div>
     </section>
     </div>
@@ -637,7 +632,7 @@ footer {
  <div>
  <section>
   <div class="section-title">Mood</div>
-  <div class="moods scrollable-rows" style="--row-count: 1; min-height: 160px;" id="moodsContainer">
+  <div class="moods scrollable-rows" style="--row-count: 1; min-height: 170px;" id="moodsContainer">
     <!-- moods will be dynamically injected here -->
   </div>
 </section>
@@ -660,7 +655,7 @@ footer {
 <div id="songPopup" class="popup-overlay">
   <div class="popup-content">
     <span class="close-btn" onclick="closePopup()">&times;</span>
-    <img id="popupCover" src="" alt="Song Cover" class="popup-cover">
+    <div id="popupCoverContainer"></div>
     <h2 id="popupTitle"></h2>
     <p id="popupArtist"></p>
     <p id="popupGenre"></p>
@@ -1121,29 +1116,50 @@ document.getElementById('genresBtn').addEventListener('click', () => {
 
   // Cache all mood and genre images
 async function cacheImages() {
-  if (!('caches' in window)) return;
-
-  const cacheName = 'audiowaves-assets';
-  const cache = await caches.open(cacheName);
-
-  // Select all mood and genre image <img> tags with loading="lazy"
   const imgElements = document.querySelectorAll('.mood-item img[loading="lazy"], .category-item img[loading="lazy"]');
-
   const imageUrls = Array.from(imgElements).map(img => img.src);
 
-  for (const url of imageUrls) {
+  if ('caches' in window) {
     try {
-      const response = await fetch(url, { mode: 'no-cors' });
-      if (response.ok || response.type === 'opaque') {
-        await cache.put(url, response);
-        console.log(`Cached: ${url}`);
-      } else {
-        console.warn(`Failed to cache: ${url}`);
+      const cache = await caches.open('audiowaves-assets');
+      for (const url of imageUrls) {
+        try {
+          const response = await fetch(url, { mode: 'no-cors' });
+          if (response.ok || response.type === 'opaque') {
+            await cache.put(url, response);
+            console.log(`Cached: ${url}`);
+          }
+        } catch (err) {
+          console.error(`Caching error: ${url}`, err);
+        }
       }
     } catch (err) {
-      console.error(`Error caching ${url}:`, err);
+      console.warn("Cache API failed, falling back.");
+      fallbackImageStorage(imageUrls);
     }
+  } else {
+    fallbackImageStorage(imageUrls);
   }
+}
+
+// Basic fallback using localStorage (if under 5MB total)
+function fallbackImageStorage(imageUrls) {
+  imageUrls.forEach((url, i) => {
+    fetch(url)
+      .then(res => res.blob())
+      .then(blob => {
+        const reader = new FileReader();
+        reader.onloadend = function () {
+          try {
+            localStorage.setItem(`fallback_image_${i}`, reader.result);
+          } catch (e) {
+            console.warn("localStorage quota exceeded or image too large.", e);
+          }
+        };
+        reader.readAsDataURL(blob);
+      })
+      .catch(err => console.warn("Fallback fetch error", err));
+  });
 }
 
 
@@ -1209,23 +1225,36 @@ document.addEventListener('click', function(event) {
 
 let selectedSong = null;
 
-function showPopup(song) {
+function showPopup(song) { 
   selectedSong = song;
-  const defaultCoverURL = 'https://is.gd/mkniCO'; // Your default cover
-// Generate Song ID and Share Link
-const songID = generateSongID(song);
-const shareURL = `${window.location.origin}/-/#${songID}`;
+  const defaultSVG = `
+    <svg class="popup-cover icon" xmlns="http://www.w3.org/2000/svg">
+      <use xlink:href="#default-icon"></use>
+    </svg>
+  `;
 
-// Set Share icon's link
-document.getElementById('shareLink').href = shareURL;
+  const coverContainer = document.getElementById('popupCoverContainer');
 
-  // Use the song's cover if it exists, otherwise use the default
-  document.getElementById('popupCover').src = song.cover || defaultCoverURL;
+  // Clear previous content
+  coverContainer.innerHTML = '';
+
+  if (song.cover) {
+    const img = document.createElement('img');
+    img.src = song.cover;
+    img.alt = 'Song Cover';
+    img.className = 'popup-cover';
+    coverContainer.appendChild(img);
+  } else {
+    // Use SVG as fallback
+    coverContainer.innerHTML = defaultSVG;
+  }
+
+  // Set other text fields
   document.getElementById('popupTitle').textContent = song.songTitle;
   document.getElementById('popupArtist').textContent = `${song.artistName}${song.featuredArtist ? " ft. " + song.featuredArtist : ""}`;
   document.getElementById('popupGenre').textContent = `Genre: ${song.genre}`;
 
-  // Set social links
+  // Social Links
   document.getElementById('facebookLink').href = song.facebook || '#';
   document.getElementById('xLink').href = song.x || '#';
   document.getElementById('instagramLink').href = song.instagram || '#';
@@ -1234,16 +1263,20 @@ document.getElementById('shareLink').href = shareURL;
   document.getElementById('spotifyLink').href = song.spotify || '#';
   document.getElementById('itunesLink').href = song.itunes || '#';
 
-  // Set the iframe source dynamically
+  // Share Link
+  const songID = generateSongID(song);
+  const shareURL = `${window.location.origin}/-/#${songID}`;
+  document.getElementById('shareLink').href = shareURL;
+
+  // Download iframe
   const iframe = document.getElementById('singleButtonApi');
   iframe.src = `https://clickapi.net/api/single/mp3?url=https://www.youtube.com/watch?v=${song.downloadId}`;
-
-  // Show the iframe container (download button)
   document.getElementById('iframe-container').style.display = 'block';
 
-  // Show the popup
+  // Show popup
   document.getElementById('songPopup').style.display = 'flex';
 }
+
 
 function closePopup() {
   document.getElementById('songPopup').style.display = 'none';
@@ -1264,7 +1297,7 @@ function renderTrackCard(song) {
   return `
     <div class="track-card" onclick='showPopup(JSON.parse(decodeURIComponent("${songJSON}")))'>
 
-      <div class="default-cover-icon" aria-label="${song.songTitle} cover">
+      <div class="track-card-cover" alt="${song.songTitle} cover">
         <svg class="icon"><use xlink:href="#default-icon"></use></svg>
       </div>
 
@@ -1379,7 +1412,18 @@ function generateSongID(song) {
 }
 
 
-
+if (!('loading' in HTMLImageElement.prototype)) {
+    // Manual lazy loading fallback
+    document.addEventListener("DOMContentLoaded", function () {
+      const lazyImages = document.querySelectorAll('img[loading="lazy"]');
+      lazyImages.forEach(img => {
+        const src = img.getAttribute('src');
+        const newImg = new Image();
+        newImg.src = src;
+        newImg.onload = () => img.src = src;
+      });
+    });
+  }
 </script>
 
 
