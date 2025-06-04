@@ -592,7 +592,7 @@ footer {
         <a id="genresBtn">Genres ▾</a>
         <div id="genresList" class="dropdown-content"></div>
       </div>
-      <a href="#">Upload</a>
+      <a id="uploadBtn">Upload</a>
       <a id="aboutBtn">About</a>
     </nav>
     </header>
@@ -706,6 +706,11 @@ footer {
     </div>
   </section>
 </div>
+
+<!-- Upload Page -->
+<div id="uploadPage" class="page-section active">
+    
+<div>
 <!-- About Page -->
 
   <div>
@@ -795,6 +800,7 @@ footer {
   const homePage = document.getElementById('homeBtn');
   const searchResults = document.getElementById('searchResults');
   const homeBtn = document.getElementById('homeBtn');
+  const uploadBtn = document.getElementById('uploadBtn');
   const aboutBtn = document.getElementById('aboutBtn');
   const dmcaBtn = document.getElementById('dmcaBtn');
   const disclaimerBtn = document.getElementById('disclaimerBtn');
@@ -822,6 +828,12 @@ aboutBtn.addEventListener('click', () => {
 
 homeBtn.addEventListener('click', () => {
   switchView('homePage');
+  searchInput.value = '';
+  suggestionsContainer.style.display = 'none';
+});
+
+uploadBtn.addEventListener('click', () => {
+  switchView('uploadPage');
   searchInput.value = '';
   suggestionsContainer.style.display = 'none';
 });
@@ -1429,4 +1441,3 @@ if (!('loading' in HTMLImageElement.prototype)) {
 
 </body>
 </html>
-
