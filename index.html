@@ -619,7 +619,7 @@ footer {
     <div>
     <section>
       <div class="section-title">Recently Added</div>
-      <div class="recent-grid scrollable-rows" style="--row-count: 2;">
+      <div class="recent-grid scrollable-rows" style="--row-count: 2; min-height: 160px;">
       </div>
     </section>
     </div>
@@ -628,7 +628,7 @@ footer {
     <div>
     <section>
       <div class="section-title">Genres</div>
-      <div class="categories scrollable-rows" style="--row-count: 1;">
+      <div class="categories scrollable-rows" style="--row-count: 1; min-height: 160px;">
       </div>
     </section>
     </div>
@@ -637,7 +637,7 @@ footer {
  <div>
  <section>
   <div class="section-title">Mood</div>
-  <div class="moods scrollable-rows" style="--row-count: 1;" id="moodsContainer">
+  <div class="moods scrollable-rows" style="--row-count: 1; min-height: 160px;" id="moodsContainer">
     <!-- moods will be dynamically injected here -->
   </div>
 </section>
@@ -1126,22 +1126,12 @@ async function cacheImages() {
   const cacheName = 'audiowaves-assets';
   const cache = await caches.open(cacheName);
 
-  // Mood image URLs (from HTML)
-  const moodImages = [
-    "https://i.postimg.cc/QCM1L9xx/party.webp",
-    "https://img.freepik.com/premium-photo/handsome-man-chilling-listening-music-headphones-home-sofa_624325-3454.jpg",
-    "https://i.postimg.cc/5NfJ5BKC/study.webp",
-    "https://i.postimg.cc/t4K9LYNd/workout.webp",
-    "https://i.postimg.cc/5y4PySbB/sleep.webp"
-  ];
+  // Select all mood and genre image <img> tags with loading="lazy"
+  const imgElements = document.querySelectorAll('.mood-item img[loading="lazy"], .category-item img[loading="lazy"]');
 
-  // Fetch genre images after they load from API
-  const genreImageElements = document.querySelectorAll('.category-item[data-bg]');
-  const genreImages = Array.from(genreImageElements).map(el => el.getAttribute('data-bg'));
+  const imageUrls = Array.from(imgElements).map(img => img.src);
 
-  const imageUrls = [...moodImages, ...genreImages];
-
-  imageUrls.forEach(async url => {
+  for (const url of imageUrls) {
     try {
       const response = await fetch(url, { mode: 'no-cors' });
       if (response.ok || response.type === 'opaque') {
@@ -1153,8 +1143,9 @@ async function cacheImages() {
     } catch (err) {
       console.error(`Error caching ${url}:`, err);
     }
-  });
+  }
 }
+
 
   // Footer buttons
   document.getElementById('dmcaBtn').addEventListener('click', () => {
@@ -1348,7 +1339,8 @@ function switchSection(sectionToShow) {
 
   // Call render on page load
   window.addEventListener('DOMContentLoaded', () => {
-    renderMoods();
+    renderMoods(); // renders mood images
+  setTimeout(cacheImages, 1000);
   });
   
 function loadMoodSongs(mood) {
